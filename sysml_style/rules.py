@@ -172,8 +172,8 @@ _USAGE_KEYWORDS = (
     'state ', 'flow ', 'connection ', 'binding ',
 )
 
-_UPPER_CAMEL = re.compile(r"^[A-Z][a-zA-Z0-9]*$|^'[^']+'$")
-_LOWER_CAMEL = re.compile(r"^[a-z_][a-zA-Z0-9_]*$|^'[^']+'$")
+_UPPER_CAMEL = re.compile(r"^[A-Z][a-zA-Z0-9]*$|^'[A-Z][a-zA-Z0-9]*'$")
+_LOWER_CAMEL = re.compile(r"^[a-z_][a-zA-Z0-9_]*$|^'[a-z_][a-zA-Z0-9_]*'$")
 
 
 @rule("SML201")
