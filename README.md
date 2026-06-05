@@ -98,7 +98,9 @@ In `relaxed` naming mode, single-quoted names like `'My Part'` are allowed witho
 |------|------|---------|
 | SML301 | `import`/`alias` before definitions | no |
 | SML302 | Empty block body `{}` can be omitted | no |
-| SML303 | Filename matches outermost `package` name | no |
+| SML303 | Filename matches outermost `package` name ⚠️ | no |
+
+> **⚠️ SML303 is a warning-level rule.** Filename conventions vary across organizations — some use `snake_case.sysml`, others mirror the package name exactly. Add `--ignore SML303` or set `ignore = ["SML303"]` in your config if the rule doesn't fit your workflow.
 
 ### SML4xx — Idioms
 
