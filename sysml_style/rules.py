@@ -260,14 +260,25 @@ def check_file_package_match(lines: list[str], **kwargs: object) -> list[Issue]:
     if not filename or filename == "<string>":
         return issues
     stem = Path(filename).stem
+
+    def normalize(s: str) -> str:
+        return s.strip("'\"").lower().replace("_", " ")
+
+    pattern = re.compile(
+        r"^\s*package\s+(?:<([A-Za-z_]\w*)>\s*)?"
+        r"('[^']*'|\"[^\"]*\"|[A-Za-z_]\w+)"
+    )
     for i, line in enumerate(lines, 1):
-        stripped = _strip_strings_and_comments(line)
-        m = re.match(r"^\s*package\s+([A-Za-z_]\w*)", stripped)
+        m = pattern.match(line)
         if m:
-            pkg_name = m.group(1)
-            if pkg_name != stem:
-                issues.append(Issue(i, m.start(1) + 1, "SML303",
-                    f"file name '{stem}.sysml' does not match package name '{pkg_name}'"))
+            short = m.group(1)
+            full = m.group(2)
+            pkg_name = short if short else full
+            display = full if short else pkg_name
+            if normalize(pkg_name) != normalize(stem):
+                col = m.start(2) + 1
+                issues.append(Issue(i, col, "SML303",
+                    f"file name '{stem}.sysml' does not match package name {display}"))
             return issues
     return issues
 
