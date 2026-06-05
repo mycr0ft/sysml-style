@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sysml-style"
+version = "0.1.0"
+description = "SysML v2 textual notation style checker and formatter"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "sysmlpy",
+]
+
+[project.optional-dependencies]
+toml = ["tomli>=2.0; python_version < '3.11'"]
+
+[project.scripts]
+sysml-style = "sysml_style.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sysml_style"]
+
+# ── Example sysml-style config (add to your own pyproject.toml) ──────────────
+# [tool.sysml-style]
+# max_line_length = 120
+# indent_size = 4
+# ignore = ["SML401", "SML202"]
+# naming_convention = "strict"   # or "relaxed"
