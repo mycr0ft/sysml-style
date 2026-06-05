@@ -5,10 +5,13 @@ Each rule is a function:
     rule(lines: list[str]) -> list[Issue]
 
 Issue = (line_no: int, col: int, code: str, message: str)
+
+Each rule function may accept keyword arguments (e.g. ``filename``).
 """
 from __future__ import annotations
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Callable
 
 
@@ -24,7 +27,7 @@ class Issue:
         return f"line {self.line}:{self.col}: {self.code} {self.message}"
 
 
-Rule = Callable[[list[str]], list[Issue]]
+Rule = Callable[..., list[Issue]]
 _registry: list[tuple[str, Rule]] = []
 
 
@@ -43,7 +46,7 @@ def all_rules() -> list[tuple[str, Rule]]:
 # ─── SML1xx — Whitespace ──────────────────────────────────────────────────────
 
 @rule("SML101")
-def check_operator_spacing(lines: list[str]) -> list[Issue]:
+def check_operator_spacing(lines: list[str], **kwargs: object) -> list[Issue]:
     """Operators =, ->, ~>, :>> should have exactly one space on each side."""
     issues = []
     # = sign: not preceded/followed by space (but skip ==, :=, <=, >=, =>)
@@ -61,7 +64,7 @@ def check_operator_spacing(lines: list[str]) -> list[Issue]:
 
 
 @rule("SML102")
-def check_semicolon_spacing(lines: list[str]) -> list[Issue]:
+def check_semicolon_spacing(lines: list[str], **kwargs: object) -> list[Issue]:
     """No space before ';'."""
     issues = []
     for i, line in enumerate(lines, 1):
@@ -73,7 +76,7 @@ def check_semicolon_spacing(lines: list[str]) -> list[Issue]:
 
 
 @rule("SML103")
-def check_trailing_whitespace(lines: list[str]) -> list[Issue]:
+def check_trailing_whitespace(lines: list[str], **kwargs: object) -> list[Issue]:
     """No trailing whitespace."""
     issues = []
     for i, line in enumerate(lines, 1):
@@ -84,7 +87,7 @@ def check_trailing_whitespace(lines: list[str]) -> list[Issue]:
 
 
 @rule("SML104")
-def check_indentation(lines: list[str]) -> list[Issue]:
+def check_indentation(lines: list[str], **kwargs: object) -> list[Issue]:
     """Indentation should be a multiple of 4 spaces (or consistent 3-space)."""
     issues = []
     # Detect dominant indent unit from file
@@ -121,7 +124,7 @@ def check_indentation(lines: list[str]) -> list[Issue]:
 
 
 @rule("SML105")
-def check_blank_lines_between_defs(lines: list[str]) -> list[Issue]:
+def check_blank_lines_between_defs(lines: list[str], **kwargs: object) -> list[Issue]:
     """Top-level definitions should be separated by a blank line."""
     issues = []
     top_def_keywords = re.compile(
@@ -144,7 +147,7 @@ def check_blank_lines_between_defs(lines: list[str]) -> list[Issue]:
 
 
 @rule("SML106")
-def check_opening_brace_spacing(lines: list[str]) -> list[Issue]:
+def check_opening_brace_spacing(lines: list[str], **kwargs: object) -> list[Issue]:
     """Opening brace '{' should be preceded by exactly one space."""
     issues = []
     for i, line in enumerate(lines, 1):
@@ -174,7 +177,7 @@ _LOWER_CAMEL = re.compile(r"^[a-z_][a-zA-Z0-9_]*$|^'[^']+'$")
 
 
 @rule("SML201")
-def check_def_naming(lines: list[str]) -> list[Issue]:
+def check_def_naming(lines: list[str], **kwargs: object) -> list[Issue]:
     """Definition names should be UpperCamelCase."""
     issues = []
     # Match: <def keyword> <name>
@@ -195,7 +198,7 @@ def check_def_naming(lines: list[str]) -> list[Issue]:
 
 
 @rule("SML202")
-def check_usage_naming(lines: list[str]) -> list[Issue]:
+def check_usage_naming(lines: list[str], **kwargs: object) -> list[Issue]:
     """Usage (feature) names should be lowerCamelCase."""
     issues = []
     # Match usage keyword followed by name, but not 'def'
@@ -219,7 +222,7 @@ def check_usage_naming(lines: list[str]) -> list[Issue]:
 # ─── SML3xx — Structure ───────────────────────────────────────────────────────
 
 @rule("SML301")
-def check_import_order(lines: list[str]) -> list[Issue]:
+def check_import_order(lines: list[str], **kwargs: object) -> list[Issue]:
     """import/alias statements should precede definitions in a namespace body."""
     issues = []
     import_pattern = re.compile(r'^\s*(import|alias)\b')
@@ -238,7 +241,7 @@ def check_import_order(lines: list[str]) -> list[Issue]:
 
 
 @rule("SML302")
-def check_empty_body(lines: list[str]) -> list[Issue]:
+def check_empty_body(lines: list[str], **kwargs: object) -> list[Issue]:
     """Empty block bodies '{ }' or '{}' can be omitted (style warning)."""
     issues = []
     empty_body = re.compile(r'\{\s*\}')
@@ -249,10 +252,30 @@ def check_empty_body(lines: list[str]) -> list[Issue]:
     return issues
 
 
+@rule("SML303")
+def check_file_package_match(lines: list[str], **kwargs: object) -> list[Issue]:
+    """Filename stem should match the outermost package name."""
+    issues: list[Issue] = []
+    filename: str = kwargs.get("filename", "")
+    if not filename or filename == "<string>":
+        return issues
+    stem = Path(filename).stem
+    for i, line in enumerate(lines, 1):
+        stripped = _strip_strings_and_comments(line)
+        m = re.match(r"^\s*package\s+([A-Za-z_]\w*)", stripped)
+        if m:
+            pkg_name = m.group(1)
+            if pkg_name != stem:
+                issues.append(Issue(i, m.start(1) + 1, "SML303",
+                    f"file name '{stem}.sysml' does not match package name '{pkg_name}'"))
+            return issues
+    return issues
+
+
 # ─── SML4xx — Idioms ──────────────────────────────────────────────────────────
 
 @rule("SML401")
-def check_doc_comment_placement(lines: list[str]) -> list[Issue]:
+def check_doc_comment_placement(lines: list[str], **kwargs: object) -> list[Issue]:
     """Doc comment /* */ should precede its element, not follow it."""
     issues = []
     doc_inline = re.compile(r';\s*/\*')

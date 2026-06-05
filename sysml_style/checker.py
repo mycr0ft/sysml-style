@@ -32,7 +32,7 @@ def check_source(
         if code in ignore:
             continue
         try:
-            issues.extend(rule_fn(lines))
+            issues.extend(rule_fn(lines, filename=filename))
         except Exception as e:
             # Don't let a buggy rule crash the whole check
             issues.append(Issue(0, 0, code, f"[rule error] {e}"))

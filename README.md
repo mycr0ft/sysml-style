@@ -98,6 +98,7 @@ In `relaxed` naming mode, single-quoted names like `'My Part'` are allowed witho
 |------|------|---------|
 | SML301 | `import`/`alias` before definitions | no |
 | SML302 | Empty block body `{}` can be omitted | no |
+| SML303 | Filename matches outermost `package` name | no |
 
 ### SML4xx — Idioms
 
