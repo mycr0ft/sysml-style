@@ -89,8 +89,12 @@ sysml-style walks up from the target file to find `pyproject.toml`. Use `--confi
 |------|------|---------|
 | SML201 | Definition names should be UpperCamelCase | no |
 | SML202 | Usage (feature) names should be lowerCamelCase | no |
+| SML203 | Port names should end with `Port` suffix | no |
+| SML204 | Avoid spaces in element names; use CamelCase ⚠️ | no |
 
 In `relaxed` naming mode, single-quoted names like `'My Part'` are allowed without case enforcement.
+
+> **⚠️ SML204 is a warning-level rule.** Some organizations use spaces in quoted names for readability. Add `--ignore SML204` if this doesn't fit your workflow.
 
 ### SML3xx — Structure
 
@@ -99,6 +103,7 @@ In `relaxed` naming mode, single-quoted names like `'My Part'` are allowed witho
 | SML301 | `import`/`alias` before definitions | no |
 | SML302 | Empty block body `{}` can be omitted | no |
 | SML303 | Filename matches outermost `package` name ⚠️ | no |
+| SML304 | Usages should have a descriptive name (no anonymous usages) | no |
 
 > **⚠️ SML303 is a warning-level rule.** Filename conventions vary across organizations — some use `snake_case.sysml`, others mirror the package name exactly. Add `--ignore SML303` or set `ignore = ["SML303"]` in your config if the rule doesn't fit your workflow.
 
@@ -107,3 +112,4 @@ In `relaxed` naming mode, single-quoted names like `'My Part'` are allowed witho
 | Code | Rule | Fixable |
 |------|------|---------|
 | SML401 | Doc comment before element, not after `;` | no |
+| SML402 | Use `doc` keyword for documentation comments | no |

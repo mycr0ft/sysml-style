@@ -219,6 +219,38 @@ def check_usage_naming(lines: list[str], **kwargs: object) -> list[Issue]:
     return issues
 
 
+@rule("SML203")
+def check_port_suffix(lines: list[str], **kwargs: object) -> list[Issue]:
+    """Port names should end with 'Port' suffix."""
+    issues: list[Issue] = []
+    def_pat = re.compile(r'^\s*port\s+def\s+([A-Za-z_]\w*)')
+    usage_pat = re.compile(r'(?<!\w)port\s+(?!def\b)([A-Za-z_]\w*)\s*:')
+    for i, line in enumerate(lines, 1):
+        stripped = _strip_strings_and_comments(line)
+        for pat in (def_pat, usage_pat):
+            for m in pat.finditer(stripped):
+                name = m.group(1)
+                if not name.lower().endswith("port"):
+                    col = m.start(1) + 1
+                    issues.append(Issue(i, col, "SML203",
+                        f"port name '{name}' should end with 'Port'"))
+    return issues
+
+
+@rule("SML204")
+def check_spaces_in_names(lines: list[str], **kwargs: object) -> list[Issue]:
+    """Avoid spaces in element names; use CamelCase instead."""
+    issues: list[Issue] = []
+    pattern = re.compile(r"'([^']*\s+[^']*)'")
+    for i, line in enumerate(lines, 1):
+        stripped = _strip_strings_and_comments(line)
+        for m in pattern.finditer(stripped):
+            col = m.start() + 1
+            issues.append(Issue(i, col, "SML204",
+                f"quoted name '{m.group(1)}' contains spaces — use CamelCase instead"))
+    return issues
+
+
 # ─── SML3xx — Structure ───────────────────────────────────────────────────────
 
 @rule("SML301")
@@ -283,6 +315,23 @@ def check_file_package_match(lines: list[str], **kwargs: object) -> list[Issue]:
     return issues
 
 
+@rule("SML304")
+def check_unnamed_usage(lines: list[str], **kwargs: object) -> list[Issue]:
+    """Usages should have a descriptive name."""
+    issues: list[Issue] = []
+    pattern = re.compile(
+        r'\b(part|item|port|attribute|ref|action|state|flow|connection)'
+        r'\s+(?!def\b)\s*:'
+    )
+    for i, line in enumerate(lines, 1):
+        stripped = _strip_strings_and_comments(line)
+        for m in pattern.finditer(stripped):
+            col = m.start() + 1
+            issues.append(Issue(i, col, "SML304",
+                "unnamed usage — give it a descriptive name"))
+    return issues
+
+
 # ─── SML4xx — Idioms ──────────────────────────────────────────────────────────
 
 @rule("SML401")
@@ -294,6 +343,19 @@ def check_doc_comment_placement(lines: list[str], **kwargs: object) -> list[Issu
         if doc_inline.search(line):
             issues.append(Issue(i, 1, "SML401",
                 "doc comment after ';' — place doc comments before the element"))
+    return issues
+
+
+@rule("SML402")
+def check_doc_keyword(lines: list[str], **kwargs: object) -> list[Issue]:
+    """Use 'doc' keyword for documentation comments."""
+    issues: list[Issue] = []
+    for i, line in enumerate(lines, 1):
+        raw = line.rstrip('\n')
+        if re.match(r'^\s*/\*', raw) and not re.match(r'^\s*doc\b', raw):
+            col = re.search(r'/\*', raw).start() + 1
+            issues.append(Issue(i, col, "SML402",
+                "use 'doc' keyword: doc /* ... */"))
     return issues
 
 
