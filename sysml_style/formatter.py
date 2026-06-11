@@ -16,15 +16,16 @@ def format_source(source: str) -> tuple[str, list[str]]:
         (formatted_text, list_of_warning_strings)
         If parse fails, returns (original_source, [error_message]).
     """
-    from sysmlpy import parse
-
-    model, errors = parse(source)
-    if model is None or errors:
-        msg = "; ".join(str(e) for e in errors) if errors else "parse failed"
-        return source, [f"[format] Could not parse: {msg}"]
+    from sysmlpy.antlr_visitor import parse_to_dict
+    from sysmlpy.grammar.classes import RootNamespace
 
     try:
-        formatted = str(model)
+        parsed = parse_to_dict(source)
+    except Exception as e:
+        return source, [f"[format] Could not parse: {e}"]
+
+    try:
+        formatted = RootNamespace(parsed).dump()
     except Exception as e:
         return source, [f"[format] Unparser error: {e}"]
 

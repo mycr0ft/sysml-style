@@ -100,3 +100,34 @@ def test_format_bad_syntax(tmp_path):
         capture_output=True, text=True, cwd=PROJECT,
     )
     assert result.returncode == 2
+
+
+def test_format_deep_nesting_no_data_loss(tmp_path):
+    f = tmp_path / "deep.sysml"
+    source = """\
+package DeepNesting;
+
+part def Vehicle {
+    attribute mass : Real;
+    part def Engine {
+        attribute power : Real;
+        part def Cylinder {
+            attribute bore : Real;
+            attribute def BoreSpec {
+                attribute tolerance : Real;
+            }
+        }
+    }
+}
+"""
+    f.write_text(source)
+    result = subprocess.run(
+        [sys.executable, "-m", "sysml_style", "format", str(f)],
+        capture_output=True, text=True, cwd=PROJECT,
+    )
+    assert result.returncode == 0, f"format failed: {result.stderr}"
+    formatted = f.read_text()
+    for token in ["Vehicle", "Engine", "Cylinder", "BoreSpec", "tolerance"]:
+        assert token in formatted, f"Missing '{token}' in formatted output"
+    assert formatted.count("part def") >= 3
+    assert formatted.count("attribute def") >= 1
