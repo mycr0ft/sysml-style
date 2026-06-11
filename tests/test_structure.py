@@ -8,7 +8,7 @@ class TestSML301:
     """Import/alias before definitions."""
 
     def test_correct(self):
-        assert_clean("import SI::*;\npart def Engine;")
+        assert_clean("public import SI::*;\npart def Engine;")
 
     def test_import_after_def(self):
         assert_issue_count("part def Engine;\nimport SI::*;", "SML301", 1)
@@ -67,3 +67,34 @@ class TestSML304:
 
     def test_skip_def(self):
         assert_clean("part def Engine;")
+
+
+class TestSML305:
+    """Import must have visibility parameter."""
+
+    def test_public_import(self):
+        assert_clean("public import SI::*;")
+
+    def test_private_import(self):
+        assert_clean("private import SI::*;")
+
+    def test_protected_import(self):
+        assert_clean("protected import SI::*;")
+
+    def test_bare_import(self):
+        assert_issue_count("import SI::*;", "SML305", 1)
+
+    def test_bare_import_after_def(self):
+        assert_issue_count("part def Engine;\nimport SI::*;", "SML305", 1)
+
+    def test_indented_bare_import(self):
+        assert_issue_count("    import SI::*;", "SML305", 1)
+
+    def test_public_import_all(self):
+        assert_clean("public import all SI::*;")
+
+    def test_bare_import_all(self):
+        assert_issue_count("import all SI::*;", "SML305", 1)
+
+    def test_import_in_string_untouched(self):
+        assert_clean("doc /* use import to load */")

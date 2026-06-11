@@ -332,6 +332,22 @@ def check_unnamed_usage(lines: list[str], **kwargs: object) -> list[Issue]:
     return issues
 
 
+@rule("SML305")
+def check_import_visibility(lines: list[str], **kwargs: object) -> list[Issue]:
+    """import must have a visibility parameter (public/private/protected)."""
+    issues: list[Issue] = []
+    pattern = re.compile(r'(?:(public|private|protected)\s+)?\b(import)\b')
+    for i, line in enumerate(lines, 1):
+        stripped = _strip_strings_and_comments(line)
+        for m in pattern.finditer(stripped):
+            if m.group(1) is None:  # no visibility keyword before import
+                col = m.start(2) + 1
+                issues.append(Issue(i, col, "SML305",
+                    "import without visibility — add 'public', 'private', or 'protected'",
+                    fixable=True))
+    return issues
+
+
 # ─── SML4xx — Idioms ──────────────────────────────────────────────────────────
 
 @rule("SML401")

@@ -17,7 +17,6 @@ def format_source(source: str) -> tuple[str, list[str]]:
         If parse fails, returns (original_source, [error_message]).
     """
     from sysmlpy import parse
-    from sysmlpy.formatting import classtree
 
     model, errors = parse(source)
     if model is None or errors:

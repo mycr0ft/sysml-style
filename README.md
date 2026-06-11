@@ -104,8 +104,11 @@ In `relaxed` naming mode, single-quoted names like `'My Part'` are allowed witho
 | SML302 | Empty block body `{}` can be omitted | no |
 | SML303 | Filename matches outermost `package` name ⚠️ | no |
 | SML304 | Usages should have a descriptive name (no anonymous usages) | no |
+| SML305 | `import` must have a visibility parameter (`public`/`private`/`protected`) | yes |
 
 > **⚠️ SML303 is a warning-level rule.** Filename conventions vary across organizations — some use `snake_case.sysml`, others mirror the package name exactly. Add `--ignore SML303` or set `ignore = ["SML303"]` in your config if the rule doesn't fit your workflow.
+>
+> **SML305 is fixable** — the fix adds `public ` before the import, which is the safest default visibility.
 
 ### SML4xx — Idioms
 
