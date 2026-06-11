@@ -94,7 +94,7 @@ def cmd_format(args: argparse.Namespace) -> int:
 
         for w in warnings:
             print(f"sysml-style: {filepath}: {w}", file=sys.stderr)
-            if w.startswith("[format] Could not parse"):
+            if w.startswith("[format] Could not parse") or w.startswith("[format] Parse errors"):
                 errored += 1
                 continue
 

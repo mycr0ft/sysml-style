@@ -1,8 +1,8 @@
 """
 SML formatter: round-trip via sysmlpy + post-process fixups.
 
-Uses sysmlpy's own unparser for structural normalization, then applies
-additional text-level fixes for things the unparser doesn't canonicalize.
+Round-trip via sysmlpy.parse() + str(model) for structural normalization,
+then applies text-level fixups for things the unparser doesn't canonicalize.
 """
 from __future__ import annotations
 import re
@@ -16,16 +16,14 @@ def format_source(source: str) -> tuple[str, list[str]]:
         (formatted_text, list_of_warning_strings)
         If parse fails, returns (original_source, [error_message]).
     """
-    from sysmlpy.antlr_visitor import parse_to_dict
-    from sysmlpy.grammar.classes import RootNamespace
+    from sysmlpy import parse
+
+    model, errors = parse(source)
+    if errors:
+        return source, [f"[format] Parse errors: {errors}"]
 
     try:
-        parsed = parse_to_dict(source)
-    except Exception as e:
-        return source, [f"[format] Could not parse: {e}"]
-
-    try:
-        formatted = RootNamespace(parsed).dump()
+        formatted = str(model)
     except Exception as e:
         return source, [f"[format] Unparser error: {e}"]
 
