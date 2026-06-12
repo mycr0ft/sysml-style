@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sysml-style"
-version = "0.3.3"
+version = "0.3.4"
 description = "SysML v2 textual notation style checker and formatter"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 dependencies = [
-    "sysmlpy>=0.32.3",
+    "sysmlpy>=0.32.4",
 ]
 
 [project.optional-dependencies]
