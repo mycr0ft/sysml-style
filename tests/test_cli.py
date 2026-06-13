@@ -131,3 +131,29 @@ part def Vehicle {
         assert token in formatted, f"Missing '{token}' in formatted output"
     assert formatted.count("part def") >= 3
     assert formatted.count("attribute def") >= 1
+
+
+def test_format_redef_no_double_space(tmp_path):
+    f = tmp_path / "RedefTest.sysml"
+    source = """\
+package RedefTest;
+
+attribute def BaseAttr;
+
+part def MyPart {
+    attribute :>> BaseAttr;
+}
+"""
+    f.write_text(source)
+    result = subprocess.run(
+        [sys.executable, "-m", "sysml_style", "format", str(f)],
+        capture_output=True, text=True, cwd=PROJECT,
+    )
+    assert result.returncode == 0, f"format failed: {result.stderr}"
+    formatted = f.read_text()
+    assert "  :>>" not in formatted, "Formatter produced double space before :>>"
+    result = subprocess.run(
+        [sys.executable, "-m", "sysml_style", "check", str(f)],
+        capture_output=True, text=True, cwd=PROJECT,
+    )
+    assert result.returncode == 0, f"checker found issues after format:\n{result.stdout}"

@@ -49,10 +49,9 @@ def all_rules() -> list[tuple[str, Rule]]:
 def check_operator_spacing(lines: list[str], **kwargs: object) -> list[Issue]:
     """Operators =, ->, ~>, :>> should have exactly one space on each side."""
     issues = []
-    # = sign: not preceded/followed by space (but skip ==, :=, <=, >=, =>)
     for i, line in enumerate(lines, 1):
         stripped = _strip_strings_and_comments(line)
-        # attribute mass=100  or  mass =100  or  mass= 100
+        # = sign: not preceded/followed by space (but skip ==, :=, <=, >=, =>)
         for m in re.finditer(r'(?<![=!<>:])=(?!=)', stripped):
             pos = m.start()
             before = stripped[pos-1] if pos > 0 else ' '
@@ -60,6 +59,15 @@ def check_operator_spacing(lines: list[str], **kwargs: object) -> list[Issue]:
             if before != ' ' or after != ' ':
                 issues.append(Issue(i, pos+1, "SML101",
                     "expected spaces around '=' operator", fixable=True))
+        # :>> redefinition operator
+        for m in re.finditer(r':>>', stripped):
+            pos = m.start()
+            before = stripped[pos-1] if pos > 0 else ' '
+            after_pos = m.end()
+            after = stripped[after_pos] if after_pos < len(stripped) else ' '
+            if before != ' ' or after != ' ':
+                issues.append(Issue(i, pos+1, "SML101",
+                    "expected spaces around ':>>' operator", fixable=True))
     return issues
 
 
@@ -321,7 +329,7 @@ def check_unnamed_usage(lines: list[str], **kwargs: object) -> list[Issue]:
     issues: list[Issue] = []
     pattern = re.compile(
         r'\b(part|item|port|attribute|ref|action|state|flow|connection)'
-        r'\s+(?!def\b)\s*:'
+        r'\s+(?!def\b)(?!:>>)\s*:'
     )
     for i, line in enumerate(lines, 1):
         stripped = _strip_strings_and_comments(line)
@@ -401,10 +409,13 @@ def _strip_strings_and_comments(line: str) -> str:
             j = i + 1
             while j < len(result) and result[j] != '"':
                 if result[j] == '\\':
+                    result[j] = ' '
                     j += 1
+                    if j < len(result):
+                        result[j] = ' '
+                else:
+                    result[j] = ' '
                 j += 1
-            for k in range(i, min(j+1, len(result))):
-                result[k] = ' '
             i = j + 1
             continue
         i += 1

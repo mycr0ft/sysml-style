@@ -28,12 +28,18 @@ def format_source(source: str) -> tuple[str, list[str]]:
         return source, [f"[format] Unparser error: {e}"]
 
     # Post-process: fix things the unparser leaves imperfect
+    formatted = _fix_redef_spacing(formatted)
     formatted = _fix_equals_spacing(formatted)
     formatted = _fix_semicolon_space(formatted)
     formatted = _fix_blank_lines_between_defs(formatted)
     formatted = _ensure_final_newline(formatted)
 
     return formatted, []
+
+
+def _fix_redef_spacing(text: str) -> str:
+    """Collapse double spaces before :>> (unnamed redefinitions)."""
+    return re.sub(r'  +:>>', ' :>>', text)
 
 
 def _fix_equals_spacing(text: str) -> str:

@@ -76,7 +76,7 @@ sysml-style walks up from the target file to find `pyproject.toml`. Use `--confi
 
 | Code | Rule | Fixable |
 |------|------|---------|
-| SML101 | Spaces around `=` operator | yes |
+| SML101 | Spaces around `=` and `:>>` operators | yes |
 | SML102 | No space before `;` | yes |
 | SML103 | No trailing whitespace | yes |
 | SML104 | Indentation is a multiple of the detected unit (2/3/4 spaces) | no |
@@ -103,7 +103,7 @@ In `relaxed` naming mode, single-quoted names like `'My Part'` are allowed witho
 | SML301 | `import`/`alias` before definitions | no |
 | SML302 | Empty block body `{}` can be omitted | no |
 | SML303 | Filename matches outermost `package` name ⚠️ | no |
-| SML304 | Usages should have a descriptive name (no anonymous usages) | no |
+| SML304 | Usages should have a descriptive name (no anonymous usages; redefinitions excluded) | no |
 | SML305 | `import` must have a visibility parameter (`public`/`private`/`protected`) | yes |
 
 > **⚠️ SML303 is a warning-level rule.** Filename conventions vary across organizations — some use `snake_case.sysml`, others mirror the package name exactly. Add `--ignore SML303` or set `ignore = ["SML303"]` in your config if the rule doesn't fit your workflow.

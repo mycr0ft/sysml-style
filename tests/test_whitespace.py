@@ -25,6 +25,15 @@ class TestSML101:
     def test_skip_assignment(self):
         assert_clean("attribute x := 5;")
 
+    def test_redef_correct(self):
+        assert_clean("attribute :>> BaseAttr;")
+
+    def test_redef_missing_before(self):
+        assert_issue_count("attribute:>> BaseAttr;", "SML101", 1)
+
+    def test_redef_missing_after(self):
+        assert_issue_count("attribute :>>BaseAttr;", "SML101", 1)
+
 
 class TestSML102:
     """No space before ';'."""
@@ -37,6 +46,9 @@ class TestSML102:
 
     def test_multiple(self):
         assert_issue_count("a = 1 ; b = 2 ;", "SML102", 2)
+
+    def test_string_before_semicolon(self):
+        assert_clean('attribute x = "hello";')
 
 
 class TestSML103:

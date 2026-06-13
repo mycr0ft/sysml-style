@@ -68,6 +68,9 @@ class TestSML304:
     def test_skip_def(self):
         assert_clean("part def Engine;")
 
+    def test_skip_redefinition(self):
+        assert_clean("attribute :>> BaseAttr;")
+
 
 class TestSML305:
     """Import must have visibility parameter."""
