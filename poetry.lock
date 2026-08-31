@@ -333,14 +333,14 @@ files = [
 
 [[package]]
 name = "sysmlpy"
-version = "0.34.1"
+version = "0.56.0"
 description = ""
 optional = false
 python-versions = "<4.0,>=3.9"
 groups = ["main"]
 files = [
-    {file = "sysmlpy-0.34.1-py3-none-any.whl", hash = "sha256:7460c03e64b2e695f24524cdfafc30c55719ce867bd680990468da1b0f080fd1"},
-    {file = "sysmlpy-0.34.1.tar.gz", hash = "sha256:0e72431b0b3f0b5a731429ad6d2e02154b14908a97006b015f7fe3276b700de9"},
+    {file = "sysmlpy-0.56.0-py3-none-any.whl", hash = "sha256:63661c78870d051aa96cdf581d9adf74fca58b4c97e6bad0167499ea6bd90f5b"},
+    {file = "sysmlpy-0.56.0.tar.gz", hash = "sha256:515e8b9aad235a35944d12f13f815ec2e47beeb70b5de506c9dc9e7849c5bc1e"},
 ]
 
 [package.dependencies]
@@ -442,4 +442,4 @@ toml = ["tomli"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "ed657d4fa3b875f44a1f138c46ca4a33be4c05c82345fa7f651521d092898290"
+content-hash = "574d9569956d207e04bee863c861400bf6fe881693cf7b17bc39c295f935ff64"
