@@ -116,3 +116,8 @@ In `relaxed` naming mode, single-quoted names like `'My Part'` are allowed witho
 |------|------|---------|
 | SML401 | Doc comment before element, not after `;` | no |
 | SML402 | Use `doc` keyword for documentation comments | no |
+
+## License
+
+GPL-3.0-or-later. See `LICENSE`. Releases up to 0.3.x were published under MIT;
+the GPL applies from the next release onward.
