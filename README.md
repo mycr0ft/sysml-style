@@ -119,5 +119,4 @@ In `relaxed` naming mode, single-quoted names like `'My Part'` are allowed witho
 
 ## License
 
-GPL-3.0-or-later. See `LICENSE`. Releases up to 0.3.x were published under MIT;
-the GPL applies from the next release onward.
+MPL-2.0. See `LICENSE`. Releases up to 0.3.x were published under MIT.
